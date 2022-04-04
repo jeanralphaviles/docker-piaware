@@ -1,4 +1,4 @@
-FROM debian:buster
+FROM debian:bullseye
 
 ENV PIAWARE_VERSION 7.2
 ENV MLAT yes
@@ -8,7 +8,6 @@ RUN apt update && apt install -y \
   build-essential \
   debhelper \
   devscripts \
-  dh-systemd \
   git \
   libboost-filesystem-dev \
   libboost-program-options-dev \
@@ -27,16 +26,16 @@ RUN apt update && apt install -y \
 RUN apt install -y libssl-dev tcl-dev chrpath
 RUN git clone http://github.com/flightaware/tcltls-rebuild.git /tcltls-rebuild
 WORKDIR /tcltls-rebuild
-RUN ./prepare-build.sh buster
-WORKDIR /tcltls-rebuild/package-buster
+RUN ./prepare-build.sh bullseye
+WORKDIR /tcltls-rebuild/package-bullseye
 RUN dpkg-buildpackage -b
 RUN apt install -y ../tcl-tls_*.deb
 
 RUN git clone https://github.com/flightaware/piaware_builder.git /piaware_builder
 WORKDIR /piaware_builder
 RUN git fetch --all --tags && git checkout tags/v${PIAWARE_VERSION}
-RUN ./sensible-build.sh buster
-WORKDIR /piaware_builder/package-buster
+RUN ./sensible-build.sh bullseye
+WORKDIR /piaware_builder/package-bullseye
 RUN dpkg-buildpackage -b
 RUN apt install -y ../piaware_*.deb
 
