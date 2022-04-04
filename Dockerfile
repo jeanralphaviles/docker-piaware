@@ -1,6 +1,6 @@
 FROM debian:buster
 
-ENV PIAWARE_VERSION 3.8.1
+ENV PIAWARE_VERSION 7.2
 ENV MLAT yes
 
 RUN apt update && apt install -y \
@@ -15,7 +15,9 @@ RUN apt update && apt install -y \
   libboost-regex-dev \
   libboost-system-dev \
   libz-dev \
+  patchelf \
   python3-dev \
+  python3-setuptools \
   python3-venv \
   socat \
   tcl8.6-dev \
