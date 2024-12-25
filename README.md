@@ -1,5 +1,8 @@
 # Piaware Docker Image
 
+[![release](https://github.com/jeanralphaviles/docker-piaware/actions/workflows/release.yml/badge.svg)](https://github.com/jeanralphaviles/docker-piaware/actions/workflows/release.yml)
+[![Docker Pulls](https://img.shields.io/docker/pulls/jraviles/piaware)](https://hub.docker.com/r/jraviles/piaware)
+
 ## Requirements
 
 * Register a Flightaware account ([flightaware.com](http://flightaware.com))
@@ -9,7 +12,7 @@
 
 ```shell
 docker run --rm -d --link dump1090:beast --name piaware \
-    --env FEEDER_ID=<feeder id> jraviles/piaware \
+    --env FEEDER_ID=<feeder id> jraviles/piaware
 ```
 
 ## Configuration
