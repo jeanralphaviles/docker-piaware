@@ -1,29 +1,50 @@
 name: release
 
 on:
-  release:
-    types: published
+  push:
+    branches:
+      - master
+  workflow_dispatch:
 
 jobs:
-  release:
+  docker-build-push:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      attestations: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@master
-
-      - name: Get tag name
-        id: tag
-        run: echo ::set-output name=result::$(echo $GITHUB_REF | cut -d/ -f3)
-
-      - name: Login
-        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" |docker login --username wnagele --password-stdin
-
-      - name: Installation
-        uses: crazy-max/ghaction-docker-buildx@master
-
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          registry: docker.io
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            jraviles/piaware
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
       - name: Build
-        run: |
-          docker buildx build \
-            --platform linux/amd64,linux/386,linux/arm64,linux/arm/v6,linux/arm/v7 \
-            -t wnagele/piaware:${{ steps.tag.outputs.result }} \
-            --push .
+        uses: docker/build-push-action@v6
+        with:
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          push: false
+      - name: Push
+        id: push
+        uses: docker/build-push-action@v6
+        with:
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          push: true
+          labels: ${{ steps.meta.outputs.labels }}
+          tags: jraviles/piaware:latest
+      - name: Generate Artifact Attestation for Docker Hub
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: docker.io/jraviles/piaware
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
