@@ -1,6 +1,6 @@
-FROM debian:bullseye as builder
+FROM debian:bullseye AS builder
 
-ENV PIAWARE_VERSION 7.2
+ENV PIAWARE_VERSION=9.0.1
 
 RUN apt update && \
     apt install -y \
@@ -16,6 +16,7 @@ RUN apt update && \
       libz-dev \
       patchelf \
       python3-dev \
+      python3-pip \
       python3-setuptools \
       python3-venv \
       socat \
@@ -41,7 +42,7 @@ RUN apt install -y ../piaware_*.deb
 
 FROM debian:bullseye
 
-ENV MLAT yes
+ENV MLAT=yes
 
 RUN apt update && \
     apt install -y \
@@ -58,7 +59,7 @@ COPY --from=builder /usr/lib/piaware /usr/lib/piaware
 COPY --from=builder /usr/bin/piaware-config /usr/bin/piaware-config
 COPY --from=builder /usr/lib/piaware-config /usr/lib/piaware-config
 COPY --from=builder /usr/lib/piaware_packages /usr/lib/piaware_packages
-COPY --from=builder /usr/lib/Tcllauncher1.8 /usr/lib/Tcllauncher1.8
+COPY --from=builder /usr/lib/Tcllauncher1.10 /usr/lib/Tcllauncher1.10
 COPY --from=builder /usr/lib/tcltk /usr/lib/tcltk
 COPY --from=builder /usr/lib/fa_adept_codec /usr/lib/fa_adept_codec
 COPY --from=builder /etc/piaware.conf /etc/piaware.conf
